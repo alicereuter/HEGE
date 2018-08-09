@@ -67,7 +67,7 @@ lessThanEq :: [LispVal] -> Either LispError LispVal
 lessThanEq = numBoolBinop (<=)
 
 greaterThanEq :: [LispVal] -> Either LispError LispVal
-greaterThanEq = numBoolBinop (<=)
+greaterThanEq = numBoolBinop (>=)
 
 -- | Generalized constructor for either Num or Float function
 numericBinop :: (forall a. Num a => (a -> a -> a))  -> [LispVal] -> Either LispError LispVal
