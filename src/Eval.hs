@@ -51,12 +51,7 @@ eval _ val@(Number _) = return val
 eval _ val@(Float _ ) = return val
 eval _ val@(Bool _)   = return val
 eval _ (List [Atom "quote", val]) =return val
-eval env (List [Atom "if", predicat, conseq, alt]) = 
-     do result <- eval env predicat
-        case result of
-          Bool False -> eval env alt
-          Bool True -> eval env conseq
-          notpred -> throwError $ TypeMismatch "not bool" notpred
+eval env (List [Atom "if", predicat, conseq, alt]) = ifFunc env predicat conseq alt
 eval env (List (Atom "cond":form)) = cond env $ List form
 eval env (List (Atom "case": form))  = casex env $ List form
 eval env (List [Atom "set!", Atom var, form])  = eval env form >>= setVar env var
@@ -75,6 +70,15 @@ eval env (List ( function : args)) = do
   argVals <- mapM (eval env) args
   apply func argVals
 eval _ badForm = throwError $ BadSpecialForm "unregonized form " badForm
+
+ifFunc :: Env  -> LispVal -> LispVal -> LispVal -> ExceptT LispError IO LispVal
+ifFunc env predicat conseq alt = do
+  result <- eval env predicat
+  case result of
+    Bool False -> eval env alt
+    Bool True -> eval env conseq
+    notpred -> throwError $ TypeMismatch "not bool" notpred
+
 
 -- | Constructor to make Function
 makeFunc :: Maybe String -> Env -> [LispVal] -> [LispVal] -> IOThrowsError LispVal
