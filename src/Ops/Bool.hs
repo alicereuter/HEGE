@@ -7,8 +7,14 @@ import Datatypes (LispVal (Bool)
 import Ops.Util (boolBinop)
 
 boolOps ∷ [(String, [LispVal] → ThrowError LispVal)]
-boolOps = [("&&",boolBoolBinop (&&)),
-          ("||",boolBoolBinop (||))]
+boolOps = [("&&",lispAnd),
+          ("||",lispOr)]
+
+lispAnd ∷ [LispVal] → ThrowError LispVal
+lispAnd = boolBoolBinop (&&)
+
+lispOr ∷ [LispVal] → ThrowError LispVal
+lispOr  = boolBoolBinop (||)
 
 -- | Does boolean operations
 boolBoolBinop :: (Bool -> Bool -> Bool) -> [LispVal] -> ThrowError LispVal
