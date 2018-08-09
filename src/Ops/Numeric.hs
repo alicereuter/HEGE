@@ -20,12 +20,11 @@ mathOps = [("+", add),
            ("remainder", remainder),
            {- float ops -}
            ("/", floatdiv ),
-           ("=", numBoolBinop (==)),
-           ("<", numBoolBinop (<)),
-           (">", numBoolBinop (>)),
-           ("/=",numBoolBinop (/=)),
-           (">=",numBoolBinop (>=)),
-           ("<=",numBoolBinop (<=))]
+           ("<", lessThan),
+           (">", greaterThan),
+           ("/=",notEqual),
+           ("<=",lessThanEq),
+           (">=",greaterThanEq)]
           
 -- | addition function
 add :: [LispVal] -> Either LispError LispVal
@@ -55,6 +54,20 @@ remainder = intBinop rem
 floatdiv :: [LispVal] -> Either LispError LispVal
 floatdiv = floatBinop (/)
 
+lessThan :: [LispVal] -> Either LispError LispVal
+lessThan = numBoolBinop (<)
+
+greaterThan :: [LispVal] -> Either LispError LispVal
+greaterThan = numBoolBinop (>)
+
+notEqual :: [LispVal] -> Either LispError LispVal
+notEqual = numBoolBinop (/=)
+
+lessThanEq :: [LispVal] -> Either LispError LispVal
+lessThanEq = numBoolBinop (<=)
+
+greaterThanEq :: [LispVal] -> Either LispError LispVal
+greaterThanEq = numBoolBinop (<=)
 
 -- | Generalized constructor for either Num or Float function
 numericBinop :: (forall a. Num a => (a -> a -> a))  -> [LispVal] -> Either LispError LispVal
@@ -86,5 +99,7 @@ floatBinop :: (Double -> Double -> Double) -> [LispVal] -> Either LispError Lisp
 floatBinop op x = mapM unpackFloat x >>= return . Float . foldl1 op
 
 -- | Does Integer operation
-numBoolBinop :: (Integer -> Integer -> Bool) -> [LispVal] -> ThrowError LispVal
-numBoolBinop  = boolBinop unpackNum
+numBoolBinop ∷ (forall a. Ord a => (a -> a -> Bool)) -> [LispVal] -> ThrowError LispVal
+numBoolBinop op args = if num args
+  then boolBinop unpackNum  op args
+  else boolBinop unpackFloat op args

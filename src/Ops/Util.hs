@@ -12,7 +12,7 @@ boolBinop unpacker op args = if length args /= 2
                              then throwError $ NumArgs 2 args
                              else do left <- unpacker $ args !! 0
                                      right <- unpacker $ args !! 1
-                                     return $ Bool $ left `op` right
+                                     return $ Bool $ left `op` right 
                                      
 -- | Checks if a list lispvals are String
 str :: [LispVal] -> Bool
