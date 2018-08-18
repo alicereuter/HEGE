@@ -79,6 +79,23 @@ ifFunc env predicat conseq alt = do
     Bool True -> eval env conseq
     notpred -> throwError $ TypeMismatch "not bool" notpred
 
+-- | function used to create function that takes a list as an argument
+defineList :: Env -> String -> [LispVal] -> [LispVal] -> ExceptT LispError IO LispVal
+defineList env var parameter bodyFunc = makeNormalFunc env parameter bodyFunc >>= defineVar env var
+
+-- | function used to create function that takes a dotted list as an argument
+defineDottedList :: Env
+                          -> String
+                          -> [LispVal]
+                          -> LispVal
+                          -> [LispVal]
+                          -> ExceptT LispError IO LispVal
+defineDottedList env var parameters varargs bodyFunc= makeVarArgs varargs env parameters bodyFunc >>= defineVar env var
+
+-- | function used to set a variable to a value
+setFunction :: Env
+                     -> String -> LispVal -> ExceptT LispError IO LispVal
+setFunction env var form= eval env form >>= setVar env var
 
 -- | Constructor to make Function
 makeFunc :: Maybe String -> Env -> [LispVal] -> [LispVal] -> IOThrowsError LispVal
