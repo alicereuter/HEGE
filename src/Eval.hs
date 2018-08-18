@@ -55,7 +55,7 @@ eval env (List [Atom "if", predicat, conseq, alt]) = ifFunc env predicat conseq 
 eval env (List (Atom "cond":form)) = cond env $ List form
 eval env (List (Atom "case": form))  = casex env $ List form
 eval env (List [Atom "set!", Atom var, form])  = eval env form >>= setVar env var
-eval env (List [Atom "define",Atom var, form]) = eval env form >>= defineVar env var
+eval env (List [Atom "define",Atom var, form]) = defineVariable env var form
 eval env (List [Atom "isIO",function]) = eval env function >>= isIO 
 eval env (List (Atom "define" : List (Atom var : parameter) : bodyFunc)) = makeNormalFunc env parameter bodyFunc >>= defineVar env var
 eval env (List (Atom "define" : DottedList (Atom var : parameters) varargs : bodyFunc)) = makeVarArgs varargs env parameters bodyFunc >>= defineVar env var
@@ -78,6 +78,12 @@ ifFunc env predicat conseq alt = do
     Bool False -> eval env alt
     Bool True -> eval env conseq
     notpred -> throwError $ TypeMismatch "not bool" notpred
+
+-- | defines a variable
+defineVariable :: Env
+                        -> String -> LispVal -> ExceptT LispError IO LispVal
+
+defineVariable env var form = eval env form >>= defineVar env var
 
 -- | function used to create function that takes a list as an argument
 defineList :: Env -> String -> [LispVal] -> [LispVal] -> ExceptT LispError IO LispVal
