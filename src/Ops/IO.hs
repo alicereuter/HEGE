@@ -17,8 +17,8 @@ import Ops.Util (liftThrows)
 
 -- | list of io functions
 ioPrimitives :: [(String,[LispVal] -> IOThrowsError LispVal)]
-ioPrimitives = [("open-input-file",  makePort ReadMode),
-                ("open-output-file", makePort WriteMode),
+ioPrimitives = [("open-input-file",  openInputFile),
+                ("open-output-file", openOutputFile),
                 ("close-input-port", closePort),
                 ("close-output-port", closePort),
                 ("read",readProc),
@@ -26,7 +26,11 @@ ioPrimitives = [("open-input-file",  makePort ReadMode),
                 ("read-contents",readContents),
                 ("read-all",readAll)]
 
+openInputFile :: [LispVal]  -> IOThrowsError LispVal
+openInputFile  = makePort ReadMode
 
+openOutputFile :: [LispVal] -> IOThrowsError LispVal
+openOutputFile = makePort WriteMode
 
 -- | Make a port to readfromfile
 makePort :: IOMode -> [LispVal] -> IOThrowsError LispVal
