@@ -18,18 +18,14 @@ import Ops.Util (liftThrows)
 evalString env expr   = runsIOThrows $ liftM show $ (liftThrows $ readExpr expr)>>= eval env
 
 evalAndPrint  ∷ Env → String → IO ()
-evalAndPrint env expr = if take 2 expr == ":t"
-  then do
-  let x = readExpr ( drop 3 expr)
-  putStrLn $ extractValue' showVal x
-  else if take 2 expr == ":l"
-  then do
-    let x = readExpr ( drop 3 expr)
-    putStrLn $ extractValue' showParse x
-  else evalString env expr >>= putStrLn
-
-
-
+evalAndPrint env expr 
+  | command == ":t"  =  putStrLn . extractValue' showType   $ readExpr processCommand
+  | command == ":l"  =  putStrLn . extractValue' showParse  $ readExpr processCommand
+  | otherwise =  evalString env expr >>= putStrLn
+  where command = take 2 expr
+        processCommand = drop 3 expr
+        
+extractValue' :: Show a => (t -> String) -> Either a t -> String
 extractValue' showFunc x = do
   case x of
     (Right x) → showFunc x
@@ -56,8 +52,6 @@ until_ pred prompt action = do
    if pred result 
       then return ()
       else action result >> until_ pred prompt action
-
-
 
 
 main :: IO ()
