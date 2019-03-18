@@ -1,7 +1,6 @@
 {-# LANGUAGE RankNTypes,LambdaCase, FlexibleContexts, UnicodeSyntax  #-}
 module Main where
 
-
 import Parser
 import Eval
 import Datatypes

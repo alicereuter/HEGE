@@ -33,6 +33,11 @@ primitiveBindings = nullEnv >>= (flip bindVars $ map (makeFunction IOFunc) ioFun
 runsIOThrows :: IOThrowsError String -> IO String
 runsIOThrows action = runExceptT (trapError action) >>= return . extractString
 
+showLisp :: IOThrowsError LispVal -> IO ()        
+showLisp x = do
+  str <- runsIOThrows $ liftM show $ x
+  putStrLn str
+
 
 -- | Extract String from ThrowError
 extractString :: Either LispError String -> String

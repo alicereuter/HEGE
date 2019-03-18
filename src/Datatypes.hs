@@ -69,6 +69,7 @@ unwordsList = unwords . map showVal
 unwordsList' :: [LispVal] -> String
 unwordsList' = (intercalate ", ") . map showType
 
+-- | translates datatypes to strings
 showVal :: LispVal ->  String
 showVal (String contents) = "\"" ++ contents ++ "\""
 showVal (Atom name) = name 
